@@ -60,4 +60,30 @@ class ControllerUnitTest extends TestCase
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(json_decode($testFileContent), json_decode($response->getContent()));
     }
+
+    public function testInvokeWithInvalidJson(): void
+    {
+        $messageBus= $this->createMock(MessageBusInterface::class);
+        $controller = new Controller($this->getInformationsFromIcalAsJsonQuery, $messageBus);
+        $request = $this->createMock(Request::class);
+        $request->method('getContent')->willReturn(
+            'invalid json'
+        );
+        $response = $controller->processJsonData($request);
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals('{"error":"Invalid JSON"}', $response->getContent());
+    }
+
+    public function testInvokeWithNoRequiredFields(): void
+    {
+        $messageBus= $this->createMock(MessageBusInterface::class);
+        $controller = new Controller($this->getInformationsFromIcalAsJsonQuery, $messageBus);
+        $request = $this->createMock(Request::class);
+        $request->method('getContent')->willReturn(
+            '{"key":"value"}'
+        );
+        $response = $controller->processJsonData($request);
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals('{"error":"Missing required fields in JSON"}', $response->getContent());
+    }
 }
