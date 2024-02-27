@@ -8,17 +8,32 @@ parameters:
 services:
     # default configuration for services in *this* file
     _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
+        autowire: false      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
-    App\:
-        resource: '../src/'
-        exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
 
+    App\UI\Controller\:
+        resource: '../src/UI/Controller/'
+        arguments:
+            - '@App\Domain\Query\GetInformationsFromIcalAsJsonQueryInterface'
+            - '@messenger.bus.default'
+        tags: ['controller.service_arguments']
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Application\MessageHandler\SendJsonDataToS3BucketMessageHandler:
+        arguments:
+            $s3Client: '@App\Infrastructure\S3Client\S3ClientClass'
+            $logger: '@monolog.logger'
+
+    App\UI\Cli\GetJsonDataFromIcalCli:
+        arguments:
+            $getInformationsFromIcalAsJsonQuery: '@App\Domain\Query\GetInformationsFromIcalAsJsonQueryInterface'
+            $messageBus: '@messenger.bus.default'
+
+
+imports:
+    - { resource: 'queries.yaml' }
+    - { resource: 'api_clients.yaml' }

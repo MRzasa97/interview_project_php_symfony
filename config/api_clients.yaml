@@ -1,0 +1,8 @@
+services:
+    App\Infrastructure\S3Client\S3ClientClass:
+        class: App\Infrastructure\S3Client\S3ClientClass
+        arguments:
+            $accessKey: '%env(string:S3_ACCESS_KEY)%'
+            $secretKey: '%env(string:S3_SECRET_KEY)%'
+            $region: '%env(string:S3_REGION)%'
+            $bucketName: '%env(string:S3_BUCKET)%'

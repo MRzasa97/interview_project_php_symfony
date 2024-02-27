@@ -1,0 +1,8 @@
+services:
+  App\Infrastructure\Query\GetInformationsFromIcalAsJsonQuery:
+    arguments:
+      $logger: '@monolog.logger'
+      $s3Client: '@App\Infrastructure\S3Client\S3ClientClass'
+
+  App\Domain\Query\GetInformationsFromIcalAsJsonQueryInterface:
+    alias: App\Infrastructure\Query\GetInformationsFromIcalAsJsonQuery
